@@ -33,14 +33,12 @@
                                 enctype="multipart/form-data">
                                 @csrf
                                 <div class="mb-3">
-                                    <label for="nama_template" class="form-label">Nama Template <span
-                                            class="text-danger">*</span></label>
+                                    <label for="nama_template" class="form-label">Nama Template</label>
                                     <input type="text" class="form-control" id="nama_template" name="nama_template"
                                         value="{{ old('nama_template') }}" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="template_file" class="form-label">Pilih File Template (.docx, .pdf) <span
-                                            class="text-danger">*</span></label>
+                                    <label for="template_file" class="form-label">Pilih File Template (.docx, .pdf)</label>
                                     <input class="form-control" type="file" id="template_file" name="template_file"
                                         required>
                                 </div>

@@ -31,8 +31,7 @@
                         @csrf
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label" for="name">Nama Lengkap <span
-                                        class="text-danger">*</span></label>
+                                <label class="form-label" for="name">Nama Lengkap</label>
                                 <input type="text" class="form-control @error('name') is-invalid @enderror"
                                     id="name" name="name" value="{{ old('name') }}" required>
                                 @error('name')
@@ -41,7 +40,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label" for="email">Email <span class="text-danger">*</span></label>
+                                <label class="form-label" for="email">Email</label>
                                 <input type="email" class="form-control @error('email') is-invalid @enderror"
                                     id="email" name="email" value="{{ old('email') }}" required>
                                 @error('email')
@@ -50,7 +49,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label" for="password">Password <span class="text-danger">*</span></label>
+                                <label class="form-label" for="password">Password</label>
                                 <div class="position-relative">
                                     <input type="password" class="form-control pe-5 @error('password') is-invalid @enderror"
                                         id="password" name="password" required>
@@ -64,7 +63,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label" for="role">Role <span class="text-danger">*</span></label>
+                                <label class="form-label" for="role">Role</label>
                                 <select class="form-select @error('role') is-invalid @enderror" id="role"
                                     name="role" required>
                                     <option value="">Pilih Role</option>
@@ -80,8 +79,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label" for="unit_kerja_id">Unit Kerja <span
-                                        class="text-danger">*</span></label>
+                                <label class="form-label" for="unit_kerja_id">Unit Kerja</label>
                                 <select class="form-select @error('unit_kerja_id') is-invalid @enderror" id="unit_kerja_id"
                                     name="unit_kerja_id" required>
                                     <option value="">Pilih Unit Kerja</option>

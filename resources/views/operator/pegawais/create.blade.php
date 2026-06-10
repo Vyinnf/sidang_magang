@@ -44,6 +44,10 @@
                     <form action="{{ route('operator.pegawais.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
+                        <div class="text-muted small mb-3">
+                            Keterangan: <span class="text-danger">*</span> Wajib diisi
+                        </div>
+
                         <input type="hidden" name="tipe" value="{{ request()->routeIs('operator.pegawais.createLama') ? 'lama' : 'baru' }}">
 
                         {{-- Bagian 1: Informasi Akun --}}

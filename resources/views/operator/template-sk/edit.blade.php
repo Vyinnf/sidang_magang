@@ -33,6 +33,11 @@
                                 enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
+
+                                <div class="text-muted small mb-3">
+                                    Keterangan: <span class="text-danger">*</span> Wajib diisi
+                                </div>
+
                                 <div class="mb-3">
                                     <label for="nama_template" class="form-label">Nama Template <span
                                             class="text-danger">*</span></label>

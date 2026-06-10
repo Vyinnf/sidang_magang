@@ -32,6 +32,10 @@
                         @csrf
                         @method('PUT')
 
+                        <div class="text-muted small mb-3">
+                            Keterangan: <span class="text-danger">*</span> Wajib diisi
+                        </div>
+
                         {{-- Bagian 1: Data Pegawai --}}
                         <h6 class="mb-3 fw-bold">Data Pegawai</h6>
                         <div class="row">

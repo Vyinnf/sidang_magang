@@ -33,8 +33,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label" for="nama_unit_kerja">Nama Unit Kerja <span
-                                        class="text-danger">*</span></label>
+                                <label class="form-label" for="nama_unit_kerja">Nama Unit Kerja</label>
                                 <input type="text" class="form-control @error('nama_unit_kerja') is-invalid @enderror"
                                     id="nama_unit_kerja" name="nama_unit_kerja"
                                     value="{{ old('nama_unit_kerja', $unitKerja->nama_unit_kerja) }}"

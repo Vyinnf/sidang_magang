@@ -29,6 +29,11 @@
                     <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
                         @csrf
                         @method('PUT')
+
+                        <div class="text-muted small mb-3">
+                            Keterangan: <span class="text-danger">*</span> Wajib diisi
+                        </div>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label" for="name">Nama Lengkap <span

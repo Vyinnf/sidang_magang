@@ -676,8 +676,8 @@
                                     <div class="mb-3">
                                         <label class="mb-2 fw-medium" for="message">Pesan Anda <span class="text-danger">*</span></label>
                                         <textarea class="form-control @error('message') is-invalid @enderror" id="message" name="message" rows="5" required aria-required="true" minlength="10" placeholder="Tulis pesan atau pertanyaan Anda...">{{ old('message') }}</textarea>
-                                        <small class="form-text text-muted">Minimal 10 karakter.</small>
-                                        <small class="form-text text-muted">Keterangan: Bintang Merah = Wajib Diisi</small>
+                                        <small class="form-text text-muted d-block">Minimal 10 karakter.</small>
+                                        <small class="form-text text-muted">Keterangan: <span class="text-danger">*</span> Wajib diisi</small>
                                         @error('message')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
