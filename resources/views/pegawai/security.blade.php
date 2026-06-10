@@ -56,10 +56,15 @@
                                 <!-- Password Konfirmasi -->
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Password Saat Ini</label>
-                                    <input type="password" name="password"
-                                        class="form-control @error('password') is-invalid @enderror"
-                                        placeholder="Masukkan password Anda" required>
-                                    <small class="text-muted">Masukkan password saat ini untuk verifikasi keamanan</small>
+                                    <div class="position-relative">
+                                        <input type="password" name="password"
+                                            class="form-control pe-5 @error('password') is-invalid @enderror"
+                                            placeholder="Masukkan password Anda" required>
+                                        <button type="button" class="btn btn-link text-muted position-absolute top-50 translate-middle-y p-0 toggle-password-btn" style="right: 0.75rem; width: 2rem; height: 2rem; text-decoration: none;" tabindex="-1" aria-label="Toggle password visibility">
+                                            <i class="ti ti-eye"></i>
+                                        </button>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Masukkan password saat ini untuk verifikasi keamanan</small>
                                     @error('password')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -92,8 +97,13 @@
                                 <!-- Password Lama -->
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Password Lama</label>
-                                    <input type="password" name="current_password"
-                                        class="form-control @error('current_password') is-invalid @enderror" required>
+                                    <div class="position-relative">
+                                        <input type="password" name="current_password"
+                                            class="form-control pe-5 @error('current_password') is-invalid @enderror" required>
+                                        <button type="button" class="btn btn-link text-muted position-absolute top-50 translate-middle-y p-0 toggle-password-btn" style="right: 0.75rem; width: 2rem; height: 2rem; text-decoration: none;" tabindex="-1" aria-label="Toggle password visibility">
+                                            <i class="ti ti-eye"></i>
+                                        </button>
+                                    </div>
                                     @error('current_password')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -102,8 +112,13 @@
                                 <!-- Password Baru -->
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Password Baru</label>
-                                    <input type="password" name="new_password"
-                                        class="form-control @error('new_password') is-invalid @enderror" required>
+                                    <div class="position-relative">
+                                        <input type="password" name="new_password"
+                                            class="form-control pe-5 @error('new_password') is-invalid @enderror" required>
+                                        <button type="button" class="btn btn-link text-muted position-absolute top-50 translate-middle-y p-0 toggle-password-btn" style="right: 0.75rem; width: 2rem; height: 2rem; text-decoration: none;" tabindex="-1" aria-label="Toggle password visibility">
+                                            <i class="ti ti-eye"></i>
+                                        </button>
+                                    </div>
                                     @error('new_password')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -112,7 +127,12 @@
                                 <!-- Konfirmasi Password Baru -->
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Konfirmasi Password Baru</label>
-                                    <input type="password" name="new_password_confirmation" class="form-control" required>
+                                    <div class="position-relative">
+                                        <input type="password" name="new_password_confirmation" class="form-control pe-5" required>
+                                        <button type="button" class="btn btn-link text-muted position-absolute top-50 translate-middle-y p-0 toggle-password-btn" style="right: 0.75rem; width: 2rem; height: 2rem; text-decoration: none;" tabindex="-1" aria-label="Toggle password visibility">
+                                            <i class="ti ti-eye"></i>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div class="d-flex justify-content-end gap-2">

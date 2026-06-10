@@ -31,6 +31,19 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="main-style-link">
     <link rel="stylesheet" href="{{ asset('assets/css/style-preset.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Sembunyikan icon eye bawaan browser (Edge, IE) */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+
+        /* Sembunyikan icon eye bawaan Chrome */
+        input[type="password"]::-webkit-contacts-auto-fill-button,
+        input[type="password"]::-webkit-credentials-auto-fill-button {
+            display: none;
+        }
+    </style>
 </head>
 <!-- [Head] end -->
 <!-- [Body] Start -->
@@ -221,6 +234,32 @@
     </script>
     <script>
         font_change("Public-Sans");
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Handle password visibility toggle for all elements
+            document.querySelectorAll('.toggle-password-btn').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var container = this.closest('.position-relative');
+                    if (!container) return;
+                    var input = container.querySelector('input');
+                    var icon = this.querySelector('i');
+                    if (input && icon) {
+                        var isPassword = input.getAttribute('type') === 'password';
+                        input.setAttribute('type', isPassword ? 'text' : 'password');
+                        
+                        // Update icon classes
+                        if (isPassword) {
+                            icon.classList.remove('ti-eye');
+                            icon.classList.add('ti-eye-off');
+                        } else {
+                            icon.classList.remove('ti-eye-off');
+                            icon.classList.add('ti-eye');
+                        }
+                    }
+                });
+            });
+        });
     </script>
 
     @stack('scripts')
