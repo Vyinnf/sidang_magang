@@ -92,8 +92,9 @@
                             </div>
                         </div>
 
-                        <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-primary">Login</button>
+                        <div class="d-flex mt-4 gap-2">
+                            <button type="reset" class="btn btn-secondary flex-grow-1">Reset</button>
+                            <button type="submit" class="btn btn-primary flex-grow-1">Login</button>
                         </div>
                     </form>
                 </div>

@@ -71,6 +71,9 @@
                             <a href="{{ route('admin.golongans.index') }}" class="btn btn-light me-2">
                                 <i class="ti ti-arrow-left me-1"></i> Batal
                             </a>
+                            <button type="reset" class="btn btn-secondary me-2">
+                                <i class="ti ti-rotate me-1"></i> Reset
+                            </button>
                             <button type="submit" class="btn btn-primary">
                                 <i class="ti ti-device-floppy me-1"></i> Simpan
                             </button>

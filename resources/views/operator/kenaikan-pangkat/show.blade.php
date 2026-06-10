@@ -76,6 +76,7 @@
                 <textarea name="catatan_operator" class="form-control" rows="2" placeholder="Catatan...">{{ old('catatan_operator',$permohonan->catatan_operator) }}</textarea>
               </div>
               <div class="col-md-4 d-flex gap-2">
+                <button type="reset" class="btn btn-secondary mt-auto btn-sm"><i class="ti ti-rotate"></i> Reset</button>
                 <button type="submit" class="btn btn-primary mt-auto btn-sm"><i class="ti ti-player-play"></i> Tandai Diproses</button>
               </div>
             </div>
@@ -128,6 +129,7 @@
                 @error('masa_kerja_golongan_baru_bulan')<div class="invalid-feedback">{{ $message }}</div>@enderror
               </div>
               <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                <button type="reset" class="btn btn-secondary btn-sm"><i class="ti ti-rotate"></i> Reset</button>
                 <button type="submit" class="btn btn-success btn-sm"><i class="ti ti-check"></i> Setujui</button>
               </div>
             </div>
@@ -140,6 +142,7 @@
                 <textarea name="catatan_operator" class="form-control" rows="2" placeholder="Alasan penolakan...">{{ old('catatan_operator') }}</textarea>
               </div>
               <div class="col-md-4 d-flex gap-2">
+                <button type="reset" class="btn btn-secondary mt-auto btn-sm"><i class="ti ti-rotate"></i> Reset</button>
                 <button type="submit" class="btn btn-danger mt-auto btn-sm"><i class="ti ti-x"></i> Tolak</button>
               </div>
             </div>

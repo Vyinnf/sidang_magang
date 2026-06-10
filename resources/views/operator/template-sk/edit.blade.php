@@ -50,7 +50,10 @@
                                 <div class="d-flex justify-content-end mt-4">
                                    <a href="{{ route('operator.template-sk.index') }}" class="btn btn-outline-secondary  me-2">
                                        <i class="ti ti-arrow-left"></i><span class="d-none d-sm-inline ms-1">Kembali</span>
-                                   </a>
+                                    </a>
+                                    <button type="reset" class="btn btn-secondary me-2">
+                                        <i class="ti ti-rotate"></i><span class="d-none d-sm-inline ms-1">Reset</span>
+                                    </button>
                                     <button type="submit" class="btn btn-primary">
                                         <i class="ti ti-device-floppy"></i><span class="d-none d-sm-inline ms-1">Simpan Perubahan</span>
                                     </button>

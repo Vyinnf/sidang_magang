@@ -232,6 +232,9 @@
                     <a href="{{ route('operator.permohonan-sk.index') }}" class="btn btn-light me-2">
                         <i class="ti ti-arrow-left me-1"></i> Kembali
                     </a>
+                    <button type="reset" class="btn btn-secondary me-2">
+                        <i class="ti ti-rotate me-1"></i> Reset
+                    </button>
                     <button type="submit" class="btn btn-primary" name="export">
                         <i class="ti ti-file-export me-1"></i> Cetak SK
                     </button>
@@ -269,6 +272,7 @@
                     </div>
                     <div class="modal-footer py-2">
                         <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Batal</button>
+                        <button type="reset" class="btn btn-secondary btn-sm"><i class="ti ti-rotate"></i> Reset</button>
                         <button type="submit" class="btn btn-primary btn-sm">Terapkan</button>
                     </div>
                 </div>

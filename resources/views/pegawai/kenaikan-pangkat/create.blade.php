@@ -38,6 +38,7 @@
           </div>
           <div class="mt-4 d-flex justify-content-end gap-2">
             <a href="{{ route('pegawai.permohonan-kenaikan-pangkat.index') }}" class="btn btn-outline-secondary btn-sm"><i class="ti ti-arrow-left"></i> Batal</a>
+            <button type="reset" class="btn btn-secondary btn-sm"><i class="ti ti-rotate"></i> Reset</button>
             <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-send"></i> Ajukan</button>
           </div>
         </form>

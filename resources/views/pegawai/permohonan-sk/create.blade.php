@@ -92,6 +92,9 @@
                             <a href="{{ route('pegawai.permohonan-sk.index') }}" class="btn btn-light me-2">
                                 <i class="ti ti-arrow-left"></i><span class="d-none d-sm-inline ms-1">Batal</span>
                             </a>
+                            <button type="reset" class="btn btn-secondary me-2">
+                                <i class="ti ti-rotate"></i><span class="d-none d-sm-inline ms-1">Reset</span>
+                            </button>
                             <button type="submit" class="btn btn-primary" title="Ajukan Permohonan SK">
                                 <i class="ti ti-send"></i><span class="d-none d-sm-inline ms-1">Ajukan Permohonan</span>
                             </button>

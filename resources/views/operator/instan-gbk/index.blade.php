@@ -38,8 +38,11 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-primary w-100">
+                            <div class="col-md-4 d-flex gap-2">
+                                <button type="reset" class="btn btn-secondary" title="Reset">
+                                    <i class="ti ti-rotate"></i>
+                                </button>
+                                <button type="submit" class="btn btn-primary flex-grow-1">
                                     <i class="ti ti-search me-1"></i> Proses SK Instan
                                 </button>
                             </div>

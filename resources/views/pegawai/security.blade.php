@@ -65,7 +65,10 @@
                                     @enderror
                                 </div>
 
-                                <div class="d-flex justify-content-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button type="reset" class="btn btn-secondary">
+                                        <i class="ti ti-rotate me-1"></i> Reset
+                                    </button>
                                     <button type="submit" class="btn btn-primary">
                                         <i class="ti ti-mail me-1"></i> Perbarui Email
                                     </button>
@@ -112,7 +115,10 @@
                                     <input type="password" name="new_password_confirmation" class="form-control" required>
                                 </div>
 
-                                <div class="d-flex justify-content-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button type="reset" class="btn btn-secondary">
+                                        <i class="ti ti-rotate me-1"></i> Reset
+                                    </button>
                                     <button type="submit" class="btn btn-primary">
                                         <i class="ti ti-lock me-1"></i> Perbarui Password
                                     </button>

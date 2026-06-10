@@ -48,6 +48,9 @@
                                    <a href="{{ route('operator.template-sk.index') }}" class="btn btn-outline-secondary me-2">
                                        <i class="ti ti-arrow-left me-1"></i> Kembali
                                    </a>
+                                    <button type="reset" class="btn btn-secondary me-2">
+                                        <i class="ti ti-rotate me-1"></i> Reset
+                                    </button>
                                     <button type="submit" class="btn btn-primary">
                                         <i class="ti ti-upload me-1"></i> Unggah
                                     </button>

@@ -682,7 +682,10 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <button class="btn btn-primary fw-semibold px-4" type="submit">Kirim Pesan</button>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-secondary fw-semibold px-4" type="reset">Reset</button>
+                                        <button class="btn btn-primary fw-semibold px-4" type="submit">Kirim Pesan</button>
+                                    </div>
                                 </form>
 
                                 {{-- Pesan sukses/gagal kini ditangani via session flash dari server --}}
