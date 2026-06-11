@@ -55,21 +55,6 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label" for="password">Password <small>(kosongkan jika tidak ingin
-                                        diubah)</small></label>
-                                <div class="position-relative">
-                                    <input type="password" class="form-control pe-5 @error('password') is-invalid @enderror"
-                                        id="password" name="password">
-                                    <button type="button" class="btn btn-link text-muted position-absolute top-50 translate-middle-y p-0 toggle-password-btn" style="right: 0.75rem; width: 2rem; height: 2rem; text-decoration: none;" tabindex="-1" aria-label="Toggle password visibility">
-                                        <i class="ti ti-eye"></i>
-                                    </button>
-                                </div>
-                                @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-6 mb-3">
                                 <label class="form-label" for="role">Role <span class="text-danger">*</span></label>
                                 <select class="form-select @error('role') is-invalid @enderror" id="role"
                                     name="role" required>
