@@ -107,9 +107,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }
                 const time = item.time_ago;
-                return `<a href="#" data-id="${
+                const url = item.data?.url || null;
+                return `<a href="${url ? escapeHtml(url) : '#'}" data-id="${
                     item.id
-                }" class="list-group-item list-group-item-action notif-item ${unreadClass}">
+                }" data-url="${url ? escapeHtml(url) : ''}" class="list-group-item list-group-item-action notif-item ${unreadClass}">
                 <div class="d-flex">
                     <div class="flex-shrink-0">
                         <div class="user-avtar bg-light-primary"><i class="ti ti-bell"></i></div>
@@ -210,10 +211,16 @@ document.addEventListener("DOMContentLoaded", function () {
         const a = e.target.closest(".notif-item");
         if (a && a.dataset.id) {
             e.preventDefault();
+            const targetUrl = a.dataset.url || null;
+
             if (a.classList.contains("bg-light-subtle")) {
-                markSingleRead(a.dataset.id, a);
+                // Mark read then navigate
+                markSingleRead(a.dataset.id, a).finally(() => {
+                    if (targetUrl) window.location.href = targetUrl;
+                });
+            } else if (targetUrl) {
+                window.location.href = targetUrl;
             }
-            // Di sini bisa diarahkan ke halaman detail jika ada link tujuan pada data
         }
     });
 });

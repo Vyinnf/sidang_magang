@@ -8,6 +8,7 @@ use App\Models\Gaji;
 use App\Models\Pegawai;
 use App\Models\PermohonanSk;
 use App\Models\RiwayatGbk;
+use App\Notifications\StatusPermohonanDiupdate;
 use App\Services\FileStorageService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -130,6 +131,12 @@ class PermohonanController extends Controller
             $permohonanSk->save();
 
             DB::commit();
+
+            // Notifikasi ke pegawai tentang perubahan status
+            $pegawaiUser = $permohonanSk->pegawai?->user;
+            if ($pegawaiUser) {
+                $pegawaiUser->notify(new StatusPermohonanDiupdate($permohonanSk));
+            }
 
             if ($action === 'reject') {
                 return redirect()->route('operator.permohonan-sk.index')->with('success', $pesan);
@@ -354,7 +361,14 @@ class PermohonanController extends Controller
 
         $riwayatGbkTerbaru = $this->simpanRiwayatGajiBerkala($pegawai, $data);
         $pegawai->update(['tanggal_kenaikan_gaji_berkala_berikutnya' => Carbon::parse($riwayatGbkTerbaru->tmt_sk)->addYears(2)]);
-        $this->ubahStatusPermohonanSk($pegawai->permohonanSks()->latest()->first(), $riwayatGbkTerbaru);
+        $permohonanDisetujui = $pegawai->permohonanSks()->latest()->first();
+        $this->ubahStatusPermohonanSk($permohonanDisetujui, $riwayatGbkTerbaru);
+
+        // Notifikasi ke pegawai bahwa permohonan SK-nya telah disetujui
+        $pegawaiUser = $pegawai->user;
+        if ($pegawaiUser && $permohonanDisetujui) {
+            $pegawaiUser->notify(new StatusPermohonanDiupdate($permohonanDisetujui));
+        }
 
         return redirect()->route('operator.permohonan-sk.index')->with('success', 'SK Gaji Berkala berhasil dibuat dan disimpan di sistem.');
     }

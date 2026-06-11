@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;
+use App\Models\User;
+use App\Notifications\PesanKontakBaru;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -16,7 +18,13 @@ class ContactController extends Controller
          'message' => ['required', 'string', 'min:10'],
       ]);
 
-      ContactMessage::create($validated);
+      $contactMessage = ContactMessage::create($validated);
+
+      // Kirim notifikasi ke semua user dengan role admin
+      $admins = User::where('role', 'admin')->get();
+      foreach ($admins as $admin) {
+         $admin->notify(new PesanKontakBaru($contactMessage));
+      }
 
       // Gunakan redirect standar ke landing dengan anchor #contact
       return redirect()->to(route('landing') . '#contact')

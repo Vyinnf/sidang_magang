@@ -6,6 +6,8 @@ use App\Http\Controllers\Concerns\InteractsWithTableQuery;
 use App\Http\Controllers\Controller;
 use App\Models\PermohonanSk;
 use App\Models\RiwayatGbk;
+use App\Models\User;
+use App\Notifications\PermohonanSkBaru;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\FileStorageService;
@@ -169,7 +171,7 @@ class PermohonanController extends Controller
                 ];
             }
 
-            PermohonanSk::create([
+            $permohonan = PermohonanSk::create([
                 'pegawai_id' => $pegawai->id,
                 'tanggal_pengajuan' => now(),
                 'catatan_pegawai' => $request->catatan_pegawai,
@@ -178,6 +180,15 @@ class PermohonanController extends Controller
             ]);
 
             DB::commit();
+
+            // Kirim notifikasi ke semua operator di unit_kerja yang sama
+            $unitKerjaId = Auth::user()->unit_kerja_id;
+            $operators = User::where('role', 'operator')
+                ->where('unit_kerja_id', $unitKerjaId)
+                ->get();
+            foreach ($operators as $operator) {
+                $operator->notify(new PermohonanSkBaru($permohonan));
+            }
         } catch (\Throwable $e) {
             DB::rollBack();
 
