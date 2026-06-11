@@ -9,18 +9,17 @@ use Illuminate\Support\Facades\Hash;
 
 class SecurityController extends Controller
 {
-    public function index()
+    public function index($mode = null)
     {
         $user = Auth::user();
         $role = $user->role;
-        return view("$role.security", compact('user'));
+        return view("$role.security", compact('user', 'mode'));
     }
 
     public function updatePassword(Request $request)
     {
         $user = $request->user();
-                $role = $user->role;
-
+        $role = $user->role;
 
         $request->validate(
             [
@@ -36,14 +35,13 @@ class SecurityController extends Controller
         $user->password = Hash::make($request->new_password);
         $user->save();
 
-        return redirect()->route("$role.security.index")->with('success', 'Password berhasil diperbarui.');
+        return redirect()->route("$role.security.index", ['mode' => 'ubah-password'])->with('success', 'Password berhasil diperbarui.');
     }
 
     public function updateEmail(Request $request)
     {
         $user = $request->user();
-                $role = $user->role;
-
+        $role = $user->role;
 
         $request->validate(
             [
@@ -59,6 +57,6 @@ class SecurityController extends Controller
         $user->email = $request->email;
         $user->save();
 
-        return redirect()->route("$role.security.index")->with('success', 'Email berhasil diperbarui.');
+        return redirect()->route("$role.security.index", ['mode' => 'ubah-profile'])->with('success', 'Email berhasil diperbarui.');
     }
 }

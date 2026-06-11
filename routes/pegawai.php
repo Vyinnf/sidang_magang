@@ -69,7 +69,7 @@ Route::middleware('auth', 'role:pegawai')
         Route::prefix('security')
             ->name('security.')
             ->group(function () {
-                Route::get('/', [PegawaiSecurityController::class, 'index'])->name('index');
+                Route::get('/{mode?}', [PegawaiSecurityController::class, 'index'])->name('index');
                 Route::put('/update-password', [PegawaiSecurityController::class, 'updatePassword'])->name('updatePassword');
                 Route::put('/update-email', [PegawaiSecurityController::class, 'updateEmail'])->name('updateEmail');
             });

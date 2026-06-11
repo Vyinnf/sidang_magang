@@ -24,7 +24,7 @@ Route::middleware('auth', 'role:admin')
         Route::prefix('security')
             ->name('security.')
             ->group(function () {
-                Route::get('/', [AdminSecurityController::class, 'index'])->name('index');
+                Route::get('/{mode?}', [AdminSecurityController::class, 'index'])->name('index');
                 Route::put('/update-password', [AdminSecurityController::class, 'updatePassword'])->name('updatePassword');
                 Route::put('/update-email', [AdminSecurityController::class, 'updateEmail'])->name('updateEmail');
             });

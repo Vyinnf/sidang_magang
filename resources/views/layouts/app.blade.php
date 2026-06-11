@@ -151,8 +151,11 @@
                                                 class="ti ti-user"></i> <span>Profil</span>
                                         </a>
                                     @endif
-                                    <a href="{{ route(auth()->user()->role . '.security.index') }}" class="dropdown-item"><i
-                                            class="ti ti-user"></i> <span>Keamanan Akun</span>
+                                    <a href="{{ route(auth()->user()->role . '.security.index', ['mode' => 'ubah-profile']) }}" class="dropdown-item"><i
+                                            class="ti ti-user"></i> <span>Ubah Email</span>
+                                    </a>
+                                    <a href="{{ route(auth()->user()->role . '.security.index', ['mode' => 'ubah-password']) }}" class="dropdown-item"><i
+                                            class="ti ti-lock"></i> <span>Ubah Password</span>
                                     </a>
                                     <form action="{{ route('logout') }}" method="POST" class="dropdown-item">
                                         @csrf

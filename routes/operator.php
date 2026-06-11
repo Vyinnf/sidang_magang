@@ -93,7 +93,7 @@ Route::middleware('auth', 'role:operator')
          Route::prefix('security')
             ->name('security.')
             ->group(function () {
-                Route::get('/', [OperatorSecurityController::class, 'index'])->name('index');
+                Route::get('/{mode?}', [OperatorSecurityController::class, 'index'])->name('index');
                 Route::put('/update-password', [OperatorSecurityController::class, 'updatePassword'])->name('updatePassword');
                 Route::put('/update-email', [OperatorSecurityController::class, 'updateEmail'])->name('updateEmail');
             });

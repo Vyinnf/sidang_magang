@@ -12,8 +12,24 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h2 class="mb-0 fw-bold">Keamanan Akun</h2>
-                                <small class="text-muted">Perbarui email & password Anda</small>
+                                <h2 class="mb-0 fw-bold">
+                                    @if ($mode === 'ubah-password')
+                                        Ubah Password
+                                    @elseif ($mode === 'ubah-profile')
+                                        Ubah Email
+                                    @else
+                                        Keamanan Akun
+                                    @endif
+                                </h2>
+                                <small class="text-muted">
+                                    @if ($mode === 'ubah-password')
+                                        Perbarui password akun Anda
+                                    @elseif ($mode === 'ubah-profile')
+                                        Perbarui alamat email akun Anda
+                                    @else
+                                        Perbarui email & password Anda
+                                    @endif
+                                </small>
                             </div>
                         </div>
                     </div>
@@ -21,12 +37,13 @@
             </div>
 
             <div class="row">
+                @if(!$mode || $mode === 'ubah-profile')
                 <!-- Card Update Email -->
-                <div class="col-lg-6 mb-4">
+                <div class="{{ $mode === 'ubah-profile' ? 'col-lg-12' : 'col-lg-6' }} mb-4">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-4">
                             <h5 class="fw-bold mb-3">Ubah Email</h5>
-                            <form action="{{ route('pegawai.security.updateEmail') }}" method="POST">
+                            <form action="{{ route($user->role . '.security.updateEmail') }}" method="POST">
                                 @csrf
                                 @method('PUT')
 
@@ -83,14 +100,16 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
+                @if(!$mode || $mode === 'ubah-password')
                 <!-- Card Update Password -->
-                <div class="col-lg-6 mb-4">
+                <div class="{{ $mode === 'ubah-password' ? 'col-lg-12' : 'col-lg-6' }} mb-4">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-4">
                             <h5 class="fw-bold mb-3">Ubah Password</h5>
 
-                            <form action="{{ route('pegawai.security.updatePassword') }}" method="POST">
+                            <form action="{{ route($user->role . '.security.updatePassword') }}" method="POST">
                                 @csrf
                                 @method('PUT')
 
@@ -147,6 +166,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
 
         </div>
