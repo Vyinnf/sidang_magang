@@ -46,11 +46,6 @@
                                     <span class="badge badge-soft-primary">{{ strtoupper($user->role) }}</span>
                                 </div>
                             </div>
-                            <div class="mt-3 mt-md-0 ms-md-auto d-flex gap-2">
-                                <a href="{{ route('operator.pegawais.index') }}" class="btn btn-outline-danger btn-sm">
-                                    <i class="ti ti-users me-1"></i>Kelola Pegawai
-                                </a>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -96,36 +91,7 @@
                 </div>
             </div>
 
-            <!-- Quick Access (Theme) -->
-            <div class="row g-3 mb-4">
-                <div class="col-12 col-sm-6 col-xl-4">
-                    <a href="{{ route('operator.pegawais.index') }}" class="text-decoration-none">
-                        <div class="card quick-access-card h-100 text-center p-3">
-                            <div class="stat-icon mx-auto mb-2" style="font-size:1.35rem; width:48px; height:48px;"><i class="ti ti-users"></i></div>
-                            <h6 class="fw-bold mb-1">Kelola Pegawai</h6>
-                            <p class="small text-muted mb-0">Data pegawai unit kerja</p>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-4">
-                    <a href="{{ route('operator.riwayat_gbks.index') }}" class="text-decoration-none">
-                        <div class="card quick-access-card h-100 text-center p-3">
-                            <div class="stat-icon mx-auto mb-2" style="font-size:1.35rem; width:48px; height:48px;"><i class="ti ti-history"></i></div>
-                            <h6 class="fw-bold mb-1">Riwayat Gaji Berkala</h6>
-                            <p class="small text-muted mb-0">Status & histori KGB</p>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-4">
-                    <a href="{{ route('operator.permohonan-sk.index') }}" class="text-decoration-none">
-                        <div class="card quick-access-card h-100 text-center p-3">
-                            <div class="stat-icon mx-auto mb-2" style="font-size:1.35rem; width:48px; height:48px;"><i class="ti ti-file-check"></i></div>
-                            <h6 class="fw-bold mb-1">Permohonan SK</h6>
-                            <p class="small text-muted mb-0">Proses & validasi</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
+
 
             <!-- Permohonan SK Terbaru -->
             <div class="row">
@@ -146,7 +112,6 @@
                                             <th>Nama Pegawai</th>
                                             <th>Status</th>
                                             <th>Tanggal</th>
-                                            <th>Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -160,37 +125,6 @@
                                                     </span>
                                                 </td>
                                                 <td>{{ $permohonan->created_at->format('d M Y') }}</td>
-                                                <td>
-                                                    @if ($permohonan->status === 'diajukan')
-                                                        <a href="{{ route('operator.permohonan-sk.show', $permohonan->id) }}"
-                                                            class="avtar mx-1 avtar-xs btn-link-warning"
-                                                            title="Proses Permohonan">
-                                                            <i class="ti ti-settings f-20"></i>
-                                                        </a>
-                                                    @endif
-
-                                                    @if ($permohonan->status === 'diproses')
-                                                        <a href="{{ route('operator.permohonan-sk.process-sk', $permohonan->id) }}"
-                                                            class="avtar mx-1 avtar-xs btn-link-secondary"
-                                                            title="Lanjutkan Proses Pencetakan SK">
-                                                            <i class="ti ti-printer f-20"></i>
-                                                        </a>
-                                                    @endif
-
-                                                    @if ($permohonan->status === 'disetujui')
-                                                        <form
-                                                            action="{{ route('operator.permohonan-sk.destroy', $permohonan->id) }}"
-                                                            method="POST" class="d-inline">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                class="avtar mx-1 avtar-xs btn-link-secondary border-0 bg-transparent p-0 shadow-none"
-                                                                title="Hapus">
-                                                                <i class="ti ti-trash f-20"></i>
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                </td>
                                             </tr>
                                         @endforeach
                                         @if ($permohonanSk->isEmpty())

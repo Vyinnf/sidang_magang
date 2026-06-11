@@ -48,9 +48,6 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="mt-3 mt-md-0 ms-md-auto d-flex gap-2">
-                                <a href="{{ route('pegawai.profile.index') }}" class="btn btn-outline-danger btn-sm"><i class="ti ti-user me-1"></i>Lihat Profil</a>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -142,11 +139,6 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="card-footer bg-transparent border-0 text-end">
-                            <a href="{{ route('pegawai.riwayat-gbk.index') }}" class="btn btn-sm btn-outline-primary">
-                                <i class="ti ti-history me-1"></i>Lihat Riwayat
-                            </a>
-                        </div>
                     </div>
                 </div>
 
@@ -227,21 +219,6 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="card-footer bg-transparent border-0 text-end">
-                            @php
-                                $permohonanSkTerakhir = optional($riwayatTerakhir)->permohonanSk;
-                            @endphp
-                            @if ($permohonanSkTerakhir)
-                                <a href="{{ route('pegawai.permohonan-sk.show', $permohonanSkTerakhir->id) }}"
-                                    class="btn btn-sm btn-info text-white">
-                                    <i class="ti ti-info-circle me-1"></i> Lihat Status Permohonan
-                                </a>
-                            @else
-                                <a href="{{ route('pegawai.permohonan-sk.create') }}" class="btn btn-sm btn-danger">
-                                    <i class="ti ti-file-plus me-1"></i> Ajukan Permohonan SK
-                                </a>
-                            @endif
-                        </div>
                     </div>
                 </div>
             </div>
@@ -273,11 +250,7 @@
                                             <i class="ti ti-alert-triangle me-1"></i> SK Tidak Lengkap
                                         </span>
                                     </div>
-                                    <p class="text-muted small mb-3">Harap lengkapi dokumen SK KGB</p>
-                                    <a href="{{ route('pegawai.riwayat-gbk.edit', optional($riwayatTerakhir)->id) }}"
-                                        class="btn btn-sm btn-primary px-3">
-                                        <i class="ti ti-edit me-1"></i> Lengkapi SK
-                                    </a>
+                                    <p class="text-muted small mb-0">Harap lengkapi dokumen SK KGB melalui menu Riwayat Gaji Berkala.</p>
                                 @endif
                             @else
                                 <div class="py-3">
