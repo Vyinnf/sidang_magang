@@ -15,6 +15,7 @@ Route::middleware('auth', 'role:admin')
     ->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::resource('/unit-kerjas', UnitKerjaController::class);
+        Route::get('/golongans/export', [GolonganController::class, 'export'])->name('golongans.export');
         Route::resource('/golongans', GolonganController::class);
         Route::resource('/gajis', GajiController::class);
         Route::resource('/users', AdminUserController::class);

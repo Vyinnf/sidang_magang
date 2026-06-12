@@ -78,11 +78,21 @@
         </div>
     @endif
 
-    @if ($hasFilter)
+    @if ($hasFilter || (isset($actions) && trim((string) $actions) !== ''))
         <div class="col-12">
-            <a href="{{ $formAction }}" class="btn btn-sm btn-outline-secondary">
-                <i class="ti ti-refresh me-1"></i> Reset Filter
-            </a>
+            <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                @if ($hasFilter)
+                    <a href="{{ $formAction }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="ti ti-refresh me-1"></i> Reset Filter
+                    </a>
+                @endif
+
+                @if (isset($actions) && trim((string) $actions) !== '')
+                    <div class="d-flex flex-wrap gap-2">
+                        {{ $actions }}
+                    </div>
+                @endif
+            </div>
         </div>
     @endif
 </form>

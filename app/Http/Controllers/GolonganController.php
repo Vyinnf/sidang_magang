@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\InteractsWithTableQuery;
 use App\Models\Golongan;
+use Dompdf\Dompdf;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule; // Import Rule untuk validasi unique
 
@@ -25,6 +27,70 @@ class GolonganController extends Controller
         );
         $asn = $this->resolveFilter($request, 'asn', ['PNS', 'PPPK']);
 
+        $query = $this->buildGolonganQuery($tableQuery, $asn);
+
+        $golongans = $query
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->paginate($tableQuery['per_page'])
+            ->withQueryString();
+
+        return view('admin.golongans.index', compact('golongans', 'tableQuery', 'asn'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('admin.golongans.create');
+    }
+
+    /**
+     * Export golongan data to CSV.
+     */
+    public function export(Request $request)
+    {
+        $tableQuery = $this->resolveTableQuery(
+            $request,
+            ['created_at', 'golongan', 'pangkat', 'asn'],
+            'created_at',
+            'desc',
+            10
+        );
+        $asn = $this->resolveFilter($request, 'asn', ['PNS', 'PPPK']);
+        $format = $request->query('format', 'excel');
+
+        $golongans = $this->buildGolonganQuery($tableQuery, $asn)
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->get();
+
+        if ($format === 'pdf') {
+            $filename = 'golongans_' . now()->format('YmdHis') . '.pdf';
+            $html = view('admin.golongans.export-pdf', compact('golongans'))->render();
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
+
+            return response($dompdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            ]);
+        }
+
+        $filename = 'golongans_' . now()->format('YmdHis') . '.xls';
+        $content = view('admin.golongans.export-excel', compact('golongans'))->render();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+
+    }
+
+    private function buildGolonganQuery(array $tableQuery, ?string $asn): Builder
+    {
         $query = Golongan::query();
 
         if ($tableQuery['q'] !== '') {
@@ -47,20 +113,7 @@ class GolonganController extends Controller
             $query->whereDate('created_at', '<=', $tableQuery['to']);
         }
 
-        $golongans = $query
-            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
-            ->paginate($tableQuery['per_page'])
-            ->withQueryString();
-
-        return view('admin.golongans.index', compact('golongans', 'tableQuery', 'asn'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('admin.golongans.create');
+        return $query;
     }
 
     /**

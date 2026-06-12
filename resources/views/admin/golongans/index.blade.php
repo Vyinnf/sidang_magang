@@ -44,6 +44,22 @@
                         :dir="$tableQuery['dir'] ?? request('dir', 'desc')"
                         :per-page="$tableQuery['per_page'] ?? (int) request('per_page', 10)"
                     >
+                        <x-slot name="actions">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="ti ti-download me-1"></i>Download
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ route('admin.golongans.export', array_merge(request()->query(), ['format' => 'excel'])) }}">Excel</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.golongans.export', array_merge(request()->query(), ['format' => 'pdf'])) }}">PDF</a></li>
+                                </ul>
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="window.print()">
+                                <i class="ti ti-printer me-1"></i>Print
+                            </button>
+                        </x-slot>
+
                         <div class="col-md-3">
                             <label class="form-label mb-1">Jenis ASN</label>
                             <select name="asn" class="form-select">
