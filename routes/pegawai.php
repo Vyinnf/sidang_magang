@@ -5,9 +5,7 @@ use App\Http\Controllers\Pegawai\PermohonanController as PegawaiPermohonanContro
 use App\Http\Controllers\Pegawai\ProfileController as PegawaiProfileController;
 use App\Http\Controllers\Pegawai\RiwayatGbkController as PegawaiRiwayatGbkController;
 use App\Http\Controllers\SecurityController as PegawaiSecurityController;
-
 use Illuminate\Support\Facades\Route;
-
 
 Route::middleware('auth', 'role:pegawai')
     ->prefix('pegawai')
@@ -62,6 +60,7 @@ Route::middleware('auth', 'role:pegawai')
         Route::prefix('riwayat-kenaikan-pangkat')
             ->name('riwayat-kenaikan-pangkat.')
             ->group(function () {
+                Route::get('/export/{format}', [\App\Http\Controllers\Pegawai\RiwayatKenaikanPangkatController::class, 'export'])->name('export');
                 Route::get('/', [\App\Http\Controllers\Pegawai\RiwayatKenaikanPangkatController::class, 'index'])->name('index');
                 Route::get('/{id}', [\App\Http\Controllers\Pegawai\RiwayatKenaikanPangkatController::class, 'show'])->name('show');
                 Route::get('/{id}/download', [\App\Http\Controllers\Pegawai\RiwayatKenaikanPangkatController::class, 'download'])->name('download');
