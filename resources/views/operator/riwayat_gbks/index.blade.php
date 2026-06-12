@@ -30,6 +30,7 @@
                     <x-table.filter-toolbar
                         placeholder="Cari nama pegawai, NIP, atau nomor SK..."
                         :sort-options="[
+                            'id' => 'ID',
                             'tmt_sk' => 'TMT SK',
                             'tanggal_sk' => 'Tanggal SK',
                             'gaji_pokok_baru' => 'Gaji Baru',
@@ -41,6 +42,22 @@
                         :dir="$tableQuery['dir'] ?? request('dir', 'desc')"
                         :per-page="$tableQuery['per_page'] ?? (int) request('per_page', 10)"
                     >
+                        <x-slot name="actions">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="ti ti-download me-1"></i>Download
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ route('operator.riwayat_gbks.export', array_merge(request()->query(), ['format' => 'excel'])) }}">Excel</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('operator.riwayat_gbks.export', array_merge(request()->query(), ['format' => 'pdf'])) }}">PDF</a></li>
+                                </ul>
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="window.print()">
+                                <i class="ti ti-printer me-1"></i>Print
+                            </button>
+                        </x-slot>
+
                         <div class="col-md-3">
                             <label class="form-label mb-1">Status SK</label>
                             <select name="status_sk" class="form-select">
@@ -60,16 +77,43 @@
                     </x-table.filter-toolbar>
 
                     <div class="table-responsive">
+                        @php
+                            $currentQuery = request()->query();
+                        @endphp
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Pegawai</th>
+                                    <th>
+                                        Pegawai
+                                        <a href="{{ route('operator.riwayat_gbks.index', array_merge($currentQuery, ['sort' => 'id', 'dir' => 'asc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-up f-12"></i>
+                                        </a>
+                                        <a href="{{ route('operator.riwayat_gbks.index', array_merge($currentQuery, ['sort' => 'id', 'dir' => 'desc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-down f-12"></i>
+                                        </a>
+                                    </th>
                                     <th>Golongan Lama</th>
                                     <th>Golongan Baru</th>
                                     <th>Gaji Lama</th>
-                                    <th>Gaji Baru</th>
+                                    <th>
+                                        Gaji Baru
+                                        <a href="{{ route('operator.riwayat_gbks.index', array_merge($currentQuery, ['sort' => 'gaji_pokok_baru', 'dir' => 'asc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-up f-12"></i>
+                                        </a>
+                                        <a href="{{ route('operator.riwayat_gbks.index', array_merge($currentQuery, ['sort' => 'gaji_pokok_baru', 'dir' => 'desc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-down f-12"></i>
+                                        </a>
+                                    </th>
                                     <th>Masa Kerja</th>
-                                    <th>Status SK</th>
+                                    <th>
+                                        Status SK
+                                        <a href="{{ route('operator.riwayat_gbks.index', array_merge($currentQuery, ['sort' => 'status_sk', 'dir' => 'asc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-up f-12"></i>
+                                        </a>
+                                        <a href="{{ route('operator.riwayat_gbks.index', array_merge($currentQuery, ['sort' => 'status_sk', 'dir' => 'desc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-down f-12"></i>
+                                        </a>
+                                    </th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>

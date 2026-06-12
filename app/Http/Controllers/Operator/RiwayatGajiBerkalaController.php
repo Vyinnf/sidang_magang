@@ -9,6 +9,8 @@ use App\Models\Golongan;
 use App\Models\Pegawai;
 use App\Models\RiwayatGbk;
 use Carbon\Carbon;
+use Dompdf\Dompdf;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,7 +22,7 @@ class RiwayatGajiBerkalaController extends Controller
     {
         $tableQuery = $this->resolveTableQuery(
             $request,
-            ['tmt_sk', 'tanggal_sk', 'gaji_pokok_baru', 'status_sk', 'created_at'],
+            ['id', 'tmt_sk', 'tanggal_sk', 'gaji_pokok_baru', 'status_sk', 'created_at'],
             'tmt_sk',
             'desc',
             10
@@ -29,6 +31,67 @@ class RiwayatGajiBerkalaController extends Controller
         $statusSk = $this->resolveFilter($request, 'status_sk', ['lengkap', 'tidak_lengkap']);
         $unitKerjaId = Auth::user()->unit_kerja_id;
 
+        $query = $this->buildRiwayatGbkQuery($unitKerjaId, $tableQuery, $statusSk);
+
+        $riwayats = $query
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->paginate($tableQuery['per_page'])
+            ->withQueryString();
+
+        return view('operator.riwayat_gbks.index', compact('riwayats', 'tableQuery', 'statusSk'));
+    }
+
+    public function export(Request $request)
+    {
+        if (Auth::user()->role !== 'operator') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $unitKerjaId = Auth::user()->unit_kerja_id;
+
+        $tableQuery = $this->resolveTableQuery(
+            $request,
+            ['id', 'tmt_sk', 'tanggal_sk', 'gaji_pokok_baru', 'status_sk', 'created_at'],
+            'tmt_sk',
+            'desc',
+            10
+        );
+
+        $statusSk = $this->resolveFilter($request, 'status_sk', ['lengkap', 'tidak_lengkap']);
+        $format = $request->query('format', 'excel');
+
+        $query = $this->buildRiwayatGbkQuery($unitKerjaId, $tableQuery, $statusSk);
+
+        $riwayatList = $query
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->get();
+
+        if ($format === 'pdf') {
+            $filename = 'riwayat_gaji_berkala_' . now()->format('YmdHis') . '.pdf';
+            $html = view('operator.riwayat_gbks.export-pdf', ['riwayats' => $riwayatList])->render();
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
+
+            return response($dompdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => "attachment; filename=\"{ $filename}\"",
+            ]);
+        }
+
+        $filename = 'riwayat_gaji_berkala_' . now()->format('YmdHis') . '.xls';
+        $content = view('operator.riwayat_gbks.export-excel', ['riwayats' => $riwayatList])->render();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => "attachment; filename=\"{ $filename}\"",
+        ]);
+    }
+
+    private function buildRiwayatGbkQuery(int $unitKerjaId, array $tableQuery, ?string $statusSk): Builder
+    {
         $query = RiwayatGbk::with(['pegawai.user', 'golonganLama', 'golonganBaru'])
             ->whereHas('pegawai.user', function ($q) use ($unitKerjaId) {
                 $q->where('unit_kerja_id', $unitKerjaId);
@@ -60,12 +123,7 @@ class RiwayatGajiBerkalaController extends Controller
             $query->whereDate('tmt_sk', '<=', $tableQuery['to']);
         }
 
-        $riwayats = $query
-            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
-            ->paginate($tableQuery['per_page'])
-            ->withQueryString();
-
-        return view('operator.riwayat_gbks.index', compact('riwayats', 'tableQuery', 'statusSk'));
+        return $query;
     }
 
     public function show(RiwayatGbk $riwayat_gbk)

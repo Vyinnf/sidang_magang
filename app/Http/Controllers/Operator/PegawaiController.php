@@ -12,6 +12,8 @@ use App\Models\UnitKerja;
 use App\Models\User;
 use App\Services\FileStorageService;
 use Carbon\Carbon;
+use Dompdf\Dompdf;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -46,7 +48,7 @@ class PegawaiController extends Controller
 
         $tableQuery = $this->resolveTableQuery(
             $request,
-            ['created_at', 'name', 'email'],
+            ['id', 'created_at', 'name', 'email'],
             'created_at',
             'desc',
             10
@@ -57,7 +59,74 @@ class PegawaiController extends Controller
 
         // Ambil data user yang memiliki unit_kerja_id yang sama dan role 'pegawai'
         // Menggunakan eager loading untuk mencegah N+1 problem
-        $query = User::where('unit_kerja_id', $operatorUnitKerjaId)
+        $query = $this->buildPegawaiQuery($operatorUnitKerjaId, $tableQuery, $asn, $golonganId);
+
+        $users = $query
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->paginate($tableQuery['per_page'])
+            ->withQueryString();
+
+        $golongans = Golongan::orderBy('golongan')->get(['id', 'golongan', 'pangkat']);
+
+        return view('operator.pegawais.index', compact('users', 'tableQuery', 'asn', 'golonganId', 'golongans'));
+    }
+
+    /**
+     * Export pegawai data to Excel or PDF.
+     */
+    public function export(Request $request)
+    {
+        if (Auth::user()->role !== 'operator') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $operatorUnitKerjaId = Auth::user()->unit_kerja_id;
+
+        $tableQuery = $this->resolveTableQuery(
+            $request,
+            ['id', 'created_at', 'name', 'email'],
+            'created_at',
+            'desc',
+            10
+        );
+
+        $asn = $this->resolveFilter($request, 'asn', ['PNS', 'PPPK']);
+        $golonganId = $request->query('golongan_id');
+        $format = $request->query('format', 'excel');
+
+        $query = $this->buildPegawaiQuery($operatorUnitKerjaId, $tableQuery, $asn, $golonganId);
+
+        $users = $query
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->get();
+
+        if ($format === 'pdf') {
+            $filename = 'daftar_pegawai_' . now()->format('YmdHis') . '.pdf';
+            $html = view('operator.pegawais.export-pdf', compact('users'))->render();
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
+
+            return response($dompdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            ]);
+        }
+
+        $filename = 'daftar_pegawai_' . now()->format('YmdHis') . '.xls';
+        $content = view('operator.pegawais.export-excel', compact('users'))->render();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    private function buildPegawaiQuery(int $unitKerjaId, array $tableQuery, ?string $asn, ?string $golonganId): Builder
+    {
+        $query = User::where('unit_kerja_id', $unitKerjaId)
             ->where('role', 'pegawai')
             ->with('pegawai.golongan', 'unitKerja');
 
@@ -86,14 +155,7 @@ class PegawaiController extends Controller
             });
         }
 
-        $users = $query
-            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
-            ->paginate($tableQuery['per_page'])
-            ->withQueryString();
-
-        $golongans = Golongan::orderBy('golongan')->get(['id', 'golongan', 'pangkat']);
-
-        return view('operator.pegawais.index', compact('users', 'tableQuery', 'asn', 'golonganId', 'golongans'));
+        return $query;
     }
 
     /**

@@ -11,6 +11,8 @@ use App\Models\RiwayatGbk;
 use App\Notifications\StatusPermohonanDiupdate;
 use App\Services\FileStorageService;
 use Carbon\Carbon;
+use Dompdf\Dompdf;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +33,7 @@ class PermohonanController extends Controller
     {
         $tableQuery = $this->resolveTableQuery(
             $request,
-            ['created_at', 'tanggal_pengajuan', 'status'],
+            ['id', 'created_at', 'tanggal_pengajuan', 'status'],
             'created_at',
             'desc',
             10
@@ -40,6 +42,67 @@ class PermohonanController extends Controller
         $status = $this->resolveFilter($request, 'status', ['diajukan', 'diproses', 'disetujui', 'ditolak']);
         $unitKerjaId = Auth::user()->unit_kerja_id;
 
+        $query = $this->buildPermohonanQuery($unitKerjaId, $tableQuery, $status);
+
+        $permohonanSk = $query
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->paginate($tableQuery['per_page'])
+            ->withQueryString();
+
+        return view('operator.permohonan-sk.index', compact('permohonanSk', 'tableQuery', 'status'));
+    }
+
+    public function export(Request $request)
+    {
+        if (Auth::user()->role !== 'operator') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $unitKerjaId = Auth::user()->unit_kerja_id;
+
+        $tableQuery = $this->resolveTableQuery(
+            $request,
+            ['id', 'created_at', 'tanggal_pengajuan', 'status'],
+            'created_at',
+            'desc',
+            10
+        );
+
+        $status = $this->resolveFilter($request, 'status', ['diajukan', 'diproses', 'disetujui', 'ditolak']);
+        $format = $request->query('format', 'excel');
+
+        $query = $this->buildPermohonanQuery($unitKerjaId, $tableQuery, $status);
+
+        $permohonanList = $query
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->get();
+
+        if ($format === 'pdf') {
+            $filename = 'daftar_permohonan_sk_' . now()->format('YmdHis') . '.pdf';
+            $html = view('operator.permohonan-sk.export-pdf', ['permohonanSk' => $permohonanList])->render();
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
+
+            return response($dompdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => "attachment; filename=\"{ $filename}\"",
+            ]);
+        }
+
+        $filename = 'daftar_permohonan_sk_' . now()->format('YmdHis') . '.xls';
+        $content = view('operator.permohonan-sk.export-excel', ['permohonanSk' => $permohonanList])->render();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => "attachment; filename=\"{ $filename}\"",
+        ]);
+    }
+
+    private function buildPermohonanQuery(int $unitKerjaId, array $tableQuery, ?string $status): Builder
+    {
         $query = PermohonanSk::with(['pegawai.user'])
             ->whereHas('pegawai.user', function ($q) use ($unitKerjaId) {
                 $q->where('unit_kerja_id', $unitKerjaId);
@@ -68,12 +131,7 @@ class PermohonanController extends Controller
             $query->whereDate('tanggal_pengajuan', '<=', $tableQuery['to']);
         }
 
-        $permohonanSk = $query
-            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
-            ->paginate($tableQuery['per_page'])
-            ->withQueryString();
-
-        return view('operator.permohonan-sk.index', compact('permohonanSk', 'tableQuery', 'status'));
+        return $query;
     }
 
     public function show($id)

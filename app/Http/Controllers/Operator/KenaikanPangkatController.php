@@ -10,6 +10,8 @@ use App\Models\PermohonanKenaikanPangkat;
 use App\Models\RiwayatKenaikanPangkat;
 use App\Services\FileStorageService;
 use Carbon\Carbon;
+use Dompdf\Dompdf;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +31,7 @@ class KenaikanPangkatController extends Controller
    {
       $tableQuery = $this->resolveTableQuery(
          $request,
-         ['created_at', 'tanggal_pengajuan', 'status'],
+         ['id', 'created_at', 'tanggal_pengajuan', 'status'],
          'created_at',
          'desc',
          10
@@ -38,6 +40,67 @@ class KenaikanPangkatController extends Controller
       $status = $this->resolveFilter($request, 'status', ['diajukan', 'diproses', 'disetujui', 'ditolak']);
       $unitKerjaId = Auth::user()->unit_kerja_id;
 
+      $query = $this->buildKenaikanPangkatQuery($unitKerjaId, $tableQuery, $status);
+
+      $permohonans = $query
+         ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+         ->paginate($tableQuery['per_page'])
+         ->withQueryString();
+
+      return view('operator.kenaikan-pangkat.index', compact('permohonans', 'tableQuery', 'status'));
+   }
+
+   public function export(Request $request)
+   {
+      if (Auth::user()->role !== 'operator') {
+         abort(403, 'Unauthorized action.');
+      }
+
+      $unitKerjaId = Auth::user()->unit_kerja_id;
+
+      $tableQuery = $this->resolveTableQuery(
+         $request,
+         ['id', 'created_at', 'tanggal_pengajuan', 'status'],
+         'created_at',
+         'desc',
+         10
+      );
+
+      $status = $this->resolveFilter($request, 'status', ['diajukan', 'diproses', 'disetujui', 'ditolak']);
+      $format = $request->query('format', 'excel');
+
+      $query = $this->buildKenaikanPangkatQuery($unitKerjaId, $tableQuery, $status);
+
+      $permohonanList = $query
+         ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+         ->get();
+
+      if ($format === 'pdf') {
+         $filename = 'daftar_permohonan_kenaikan_pangkat_' . now()->format('YmdHis') . '.pdf';
+         $html = view('operator.kenaikan-pangkat.export-pdf', ['permohonans' => $permohonanList])->render();
+
+         $dompdf = new Dompdf();
+         $dompdf->loadHtml($html);
+         $dompdf->setPaper('A4', 'landscape');
+         $dompdf->render();
+
+         return response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => "attachment; filename=\"{ $filename}\"",
+         ]);
+      }
+
+      $filename = 'daftar_permohonan_kenaikan_pangkat_' . now()->format('YmdHis') . '.xls';
+      $content = view('operator.kenaikan-pangkat.export-excel', ['permohonans' => $permohonanList])->render();
+
+      return response($content, 200, [
+         'Content-Type' => 'application/vnd.ms-excel',
+         'Content-Disposition' => "attachment; filename=\"{ $filename}\"",
+      ]);
+   }
+
+   private function buildKenaikanPangkatQuery(int $unitKerjaId, array $tableQuery, ?string $status): Builder
+   {
       $query = PermohonanKenaikanPangkat::whereHas('pegawai.user', function ($q) use ($unitKerjaId) {
          $q->where('unit_kerja_id', $unitKerjaId);
       })->with(['pegawai.user']);
@@ -65,12 +128,7 @@ class KenaikanPangkatController extends Controller
          $query->whereDate('tanggal_pengajuan', '<=', $tableQuery['to']);
       }
 
-      $permohonans = $query
-         ->orderBy($tableQuery['sort'], $tableQuery['dir'])
-         ->paginate($tableQuery['per_page'])
-         ->withQueryString();
-
-      return view('operator.kenaikan-pangkat.index', compact('permohonans', 'tableQuery', 'status'));
+      return $query;
    }
 
    public function show($id)

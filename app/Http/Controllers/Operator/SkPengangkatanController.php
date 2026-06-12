@@ -8,6 +8,8 @@ use App\Models\Gaji;
 use App\Models\Golongan;
 use App\Services\FileStorageService;
 use App\Models\SkCpnsPppk;
+use Dompdf\Dompdf;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -27,7 +29,7 @@ class SkPengangkatanController extends Controller
     {
         $tableQuery = $this->resolveTableQuery(
             $request,
-            ['created_at', 'tanggal_sk', 'tmt', 'nomor_sk'],
+            ['id', 'created_at', 'tanggal_sk', 'tmt', 'nomor_sk'],
             'created_at',
             'desc',
             10
@@ -35,6 +37,67 @@ class SkPengangkatanController extends Controller
         $asn = $this->resolveFilter($request, 'asn', ['PNS', 'PPPK']);
         $unitKerjaId = Auth::user()->unit_kerja_id;
 
+        $query = $this->buildSkPengangkatanQuery($unitKerjaId, $tableQuery, $asn);
+
+        $skPengangkatan = $query
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->paginate($tableQuery['per_page'])
+            ->withQueryString();
+
+        return view('operator.sk-pengangkatan.index', compact('skPengangkatan', 'tableQuery', 'asn'));
+    }
+
+    public function export(Request $request)
+    {
+        if (Auth::user()->role !== 'operator') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $unitKerjaId = Auth::user()->unit_kerja_id;
+
+        $tableQuery = $this->resolveTableQuery(
+            $request,
+            ['id', 'created_at', 'tanggal_sk', 'tmt', 'nomor_sk'],
+            'created_at',
+            'desc',
+            10
+        );
+
+        $asn = $this->resolveFilter($request, 'asn', ['PNS', 'PPPK']);
+        $format = $request->query('format', 'excel');
+
+        $query = $this->buildSkPengangkatanQuery($unitKerjaId, $tableQuery, $asn);
+
+        $skPengangkatanList = $query
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->get();
+
+        if ($format === 'pdf') {
+            $filename = 'daftar_sk_pengangkatan_' . now()->format('YmdHis') . '.pdf';
+            $html = view('operator.sk-pengangkatan.export-pdf', ['skPengangkatan' => $skPengangkatanList])->render();
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
+
+            return response($dompdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => "attachment; filename=\"{ $filename}\"",
+            ]);
+        }
+
+        $filename = 'daftar_sk_pengangkatan_' . now()->format('YmdHis') . '.xls';
+        $content = view('operator.sk-pengangkatan.export-excel', ['skPengangkatan' => $skPengangkatanList])->render();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => "attachment; filename=\"{ $filename}\"",
+        ]);
+    }
+
+    private function buildSkPengangkatanQuery(int $unitKerjaId, array $tableQuery, ?string $asn): Builder
+    {
         $query = SkCpnsPppk::with(['pegawai.user'])
             ->whereHas('pegawai.user', function ($q) use ($unitKerjaId) {
                 $q->where('unit_kerja_id', $unitKerjaId);
@@ -69,12 +132,7 @@ class SkPengangkatanController extends Controller
             $query->whereDate('tanggal_sk', '<=', $tableQuery['to']);
         }
 
-        $skPengangkatan = $query
-            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
-            ->paginate($tableQuery['per_page'])
-            ->withQueryString();
-
-        return view('operator.sk-pengangkatan.index', compact('skPengangkatan', 'tableQuery', 'asn'));
+        return $query;
     }
 
     public function show(SkCpnsPppk $skPengangkatan)

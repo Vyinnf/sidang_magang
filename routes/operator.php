@@ -19,9 +19,11 @@ Route::middleware('auth', 'role:operator')
     ->name('operator.')
     ->group(function () {
         Route::resource('/pegawais', OperatorPegawaiController::class, ['parameters' => ['pegawais' => 'user']]);
+        Route::get('/pegawais/export', [OperatorPegawaiController::class, 'export'])->name('pegawais.export');
         Route::get('pegawais/create/lama', [OperatorPegawaiController::class, 'create'])->name('pegawais.createLama');
 
         Route::resource('riwayat_gbks', OperatorRiwayatGajiBerkalaController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
+        Route::get('/riwayat_gbks/export', [OperatorRiwayatGajiBerkalaController::class, 'export'])->name('riwayat_gbks.export');
 
         Route::get('/dashboard', [OperatorDashboardController::class, 'index'])->name('dashboard');
 
@@ -29,6 +31,7 @@ Route::middleware('auth', 'role:operator')
             ->name('permohonan-sk.')
             ->group(function () {
                 Route::get('/', [OperatorPermohonanController::class, 'index'])->name('index');
+                Route::get('/export', [OperatorPermohonanController::class, 'export'])->name('export');
                 Route::get('/{id}', [OperatorPermohonanController::class, 'show'])->name('show');
                 Route::get('/{permohonanSk}/attachments/{attachment}/preview', [OperatorPermohonanController::class, 'previewAttachment'])->name('attachments.preview');
                 Route::get('/{permohonanSk}/attachments/{attachment}/download', [OperatorPermohonanController::class, 'downloadAttachment'])->name('attachments.download');
@@ -43,6 +46,7 @@ Route::middleware('auth', 'role:operator')
             ->name('sk-pengangkatan.')
             ->group(function () {
                 Route::get('/', [OperatorSkPengangkatanController::class, 'index'])->name('index');
+                Route::get('/export', [OperatorSkPengangkatanController::class, 'export'])->name('export');
                 Route::get('/{skPengangkatan}/show', [OperatorSkPengangkatanController::class, 'show'])->name('show');
                 Route::get('/{skPengangkatan}/edit', [OperatorSkPengangkatanController::class, 'edit'])->name('edit');
                 Route::put('/{skPengangkatan}/update', [OperatorSkPengangkatanController::class, 'update'])->name('update');
@@ -66,6 +70,7 @@ Route::middleware('auth', 'role:operator')
             ->name('kenaikan-pangkat.')
             ->group(function () {
                 Route::get('/', [OperatorKenaikanPangkatController::class, 'index'])->name('index');
+                Route::get('/export', [OperatorKenaikanPangkatController::class, 'export'])->name('export');
                 Route::get('/{id}', [OperatorKenaikanPangkatController::class, 'show'])->name('show');
                 Route::post('/{id}/process', [OperatorKenaikanPangkatController::class, 'process'])->name('process');
                 Route::post('/{id}/approve', [OperatorKenaikanPangkatController::class, 'approve'])->name('approve');
@@ -78,6 +83,7 @@ Route::middleware('auth', 'role:operator')
             ->name('riwayat-kenaikan-pangkat.')
             ->group(function () {
                 Route::get('/', [OperatorRiwayatKenaikanPangkatController::class, 'index'])->name('index');
+                Route::get('/export', [OperatorRiwayatKenaikanPangkatController::class, 'export'])->name('export');
                 Route::get('/{id}', [OperatorRiwayatKenaikanPangkatController::class, 'show'])->name('show');
                 Route::get('/{id}/download', [OperatorRiwayatKenaikanPangkatController::class, 'download'])->name('download');
             });
