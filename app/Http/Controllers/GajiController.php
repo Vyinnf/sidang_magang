@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Concerns\InteractsWithTableQuery;
 use App\Models\Gaji;
 use App\Models\Golongan; // Import model Golongan
+use Dompdf\Dompdf;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule; // Import Rule untuk validasi unique
 
@@ -20,7 +22,7 @@ class GajiController extends Controller
     {
         $tableQuery = $this->resolveTableQuery(
             $request,
-            ['created_at', 'golongan_id', 'masa_kerja', 'asn', 'gaji_pokok'],
+            ['id', 'created_at', 'golongan_id', 'masa_kerja', 'asn', 'gaji_pokok'],
             'created_at',
             'desc',
             10
@@ -30,6 +32,66 @@ class GajiController extends Controller
         $masaKerjaMin = $request->query('masa_kerja_min');
         $masaKerjaMax = $request->query('masa_kerja_max');
 
+        $query = $this->buildGajiQuery($tableQuery, $asn, $golonganId, $masaKerjaMin, $masaKerjaMax);
+
+        $gajis = $query
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->paginate($tableQuery['per_page'])
+            ->withQueryString();
+
+        $golongans = Golongan::orderBy('golongan')->get(['id', 'golongan', 'pangkat']);
+
+        return view('admin.gajis.index', compact('gajis', 'tableQuery', 'asn', 'golonganId', 'masaKerjaMin', 'masaKerjaMax', 'golongans'));
+    }
+
+    /**
+     * Export gaji pokok data to Excel or PDF.
+     */
+    public function export(Request $request)
+    {
+        $tableQuery = $this->resolveTableQuery(
+            $request,
+            ['created_at', 'golongan_id', 'masa_kerja', 'asn', 'gaji_pokok'],
+            'created_at',
+            'desc',
+            10
+        );
+        $asn = $this->resolveFilter($request, 'asn', ['PNS', 'PPPK']);
+        $golonganId = $request->query('golongan_id');
+        $masaKerjaMin = $request->query('masa_kerja_min');
+        $masaKerjaMax = $request->query('masa_kerja_max');
+        $format = $request->query('format', 'excel');
+
+        $gajis = $this->buildGajiQuery($tableQuery, $asn, $golonganId, $masaKerjaMin, $masaKerjaMax)
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->get();
+
+        if ($format === 'pdf') {
+            $filename = 'gaji_pokok_' . now()->format('YmdHis') . '.pdf';
+            $html = view('admin.gajis.export-pdf', compact('gajis'))->render();
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
+
+            return response($dompdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            ]);
+        }
+
+        $filename = 'gaji_pokok_' . now()->format('YmdHis') . '.xls';
+        $content = view('admin.gajis.export-excel', compact('gajis'))->render();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    private function buildGajiQuery(array $tableQuery, ?string $asn, ?string $golonganId, ?string $masaKerjaMin, ?string $masaKerjaMax): Builder
+    {
         $query = Gaji::with('golongan');
 
         if ($tableQuery['q'] !== '') {
@@ -57,14 +119,7 @@ class GajiController extends Controller
             $query->where('masa_kerja', '<=', (int) $masaKerjaMax);
         }
 
-        $gajis = $query
-            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
-            ->paginate($tableQuery['per_page'])
-            ->withQueryString();
-
-        $golongans = Golongan::orderBy('golongan')->get(['id', 'golongan', 'pangkat']);
-
-        return view('admin.gajis.index', compact('gajis', 'tableQuery', 'asn', 'golonganId', 'masaKerjaMin', 'masaKerjaMax', 'golongans'));
+        return $query;
     }
 
     /**

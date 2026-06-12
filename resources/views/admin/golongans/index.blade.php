@@ -79,13 +79,48 @@
                     </x-table.filter-toolbar>
 
                     <div class="table-responsive">
+                        @php
+                            $currentQuery = request()->query();
+                        @endphp
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Golongan</th>
-                                    <th>Pangkat</th>
-                                    <th>ASN</th>
+                                    <th>
+                                        ID
+                                        <a href="{{ route('admin.golongans.index', array_merge($currentQuery, ['sort' => 'id', 'dir' => 'asc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-up f-12"></i>
+                                        </a>
+                                        <a href="{{ route('admin.golongans.index', array_merge($currentQuery, ['sort' => 'id', 'dir' => 'desc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-down f-12"></i>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        Golongan
+                                        <a href="{{ route('admin.golongans.index', array_merge($currentQuery, ['sort' => 'golongan', 'dir' => 'asc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-up f-12"></i>
+                                        </a>
+                                        <a href="{{ route('admin.golongans.index', array_merge($currentQuery, ['sort' => 'golongan', 'dir' => 'desc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-down f-12"></i>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        Pangkat
+                                        <a href="{{ route('admin.golongans.index', array_merge($currentQuery, ['sort' => 'pangkat', 'dir' => 'asc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-up f-12"></i>
+                                        </a>
+                                        <a href="{{ route('admin.golongans.index', array_merge($currentQuery, ['sort' => 'pangkat', 'dir' => 'desc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-down f-12"></i>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        ASN
+                                        <a href="{{ route('admin.golongans.index', array_merge($currentQuery, ['sort' => 'asn', 'dir' => 'asc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-up f-12"></i>
+                                        </a>
+                                        <a href="{{ route('admin.golongans.index', array_merge($currentQuery, ['sort' => 'asn', 'dir' => 'desc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-down f-12"></i>
+                                        </a>
+                                    </th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>

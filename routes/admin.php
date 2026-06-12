@@ -17,6 +17,7 @@ Route::middleware('auth', 'role:admin')
         Route::resource('/unit-kerjas', UnitKerjaController::class);
         Route::get('/golongans/export', [GolonganController::class, 'export'])->name('golongans.export');
         Route::resource('/golongans', GolonganController::class);
+        Route::get('/gajis/export', [GajiController::class, 'export'])->name('gajis.export');
         Route::resource('/gajis', GajiController::class);
         Route::resource('/users', AdminUserController::class);
         Route::get('/panduan', [\App\Http\Controllers\Admin\GuideController::class, 'index'])->name('panduan');

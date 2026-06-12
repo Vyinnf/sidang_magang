@@ -35,6 +35,7 @@
                     <x-table.filter-toolbar
                         placeholder="Cari golongan atau pangkat..."
                         :sort-options="[
+                            'id' => 'ID',
                             'created_at' => 'Waktu Dibuat',
                             'golongan_id' => 'Golongan',
                             'masa_kerja' => 'Masa Kerja',
@@ -46,6 +47,22 @@
                         :dir="$tableQuery['dir'] ?? request('dir', 'desc')"
                         :per-page="$tableQuery['per_page'] ?? (int) request('per_page', 10)"
                     >
+                        <x-slot name="actions">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="ti ti-download me-1"></i>Download
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ route('admin.gajis.export', array_merge(request()->query(), ['format' => 'excel'])) }}">Excel</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.gajis.export', array_merge(request()->query(), ['format' => 'pdf'])) }}">PDF</a></li>
+                                </ul>
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="window.print()">
+                                <i class="ti ti-printer me-1"></i>Print
+                            </button>
+                        </x-slot>
+
                         <div class="col-md-3">
                             <label class="form-label mb-1">Jenis ASN</label>
                             <select name="asn" class="form-select">
@@ -76,14 +93,57 @@
                     </x-table.filter-toolbar>
 
                     <div class="table-responsive">
+                        @php
+                            $currentQuery = request()->query();
+                        @endphp
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Golongan</th>
-                                    <th>Masa Kerja (Tahun)</th>
-                                    <th>Jenis ASN</th>
-                                    <th>Gaji Pokok</th>
+                                    <th>
+                                        ID
+                                        <a href="{{ route('admin.gajis.index', array_merge($currentQuery, ['sort' => 'id', 'dir' => 'asc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-up f-12"></i>
+                                        </a>
+                                        <a href="{{ route('admin.gajis.index', array_merge($currentQuery, ['sort' => 'id', 'dir' => 'desc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-down f-12"></i>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        Golongan
+                                        <a href="{{ route('admin.gajis.index', array_merge($currentQuery, ['sort' => 'golongan_id', 'dir' => 'asc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-up f-12"></i>
+                                        </a>
+                                        <a href="{{ route('admin.gajis.index', array_merge($currentQuery, ['sort' => 'golongan_id', 'dir' => 'desc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-down f-12"></i>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        Masa Kerja (Tahun)
+                                        <a href="{{ route('admin.gajis.index', array_merge($currentQuery, ['sort' => 'masa_kerja', 'dir' => 'asc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-up f-12"></i>
+                                        </a>
+                                        <a href="{{ route('admin.gajis.index', array_merge($currentQuery, ['sort' => 'masa_kerja', 'dir' => 'desc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-down f-12"></i>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        Jenis ASN
+                                        <a href="{{ route('admin.gajis.index', array_merge($currentQuery, ['sort' => 'asn', 'dir' => 'asc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-up f-12"></i>
+                                        </a>
+                                        <a href="{{ route('admin.gajis.index', array_merge($currentQuery, ['sort' => 'asn', 'dir' => 'desc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-down f-12"></i>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        Gaji Pokok
+                                        <a href="{{ route('admin.gajis.index', array_merge($currentQuery, ['sort' => 'gaji_pokok', 'dir' => 'asc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-up f-12"></i>
+                                        </a>
+                                        <a href="{{ route('admin.gajis.index', array_merge($currentQuery, ['sort' => 'gaji_pokok', 'dir' => 'desc'])) }}" class="text-muted ms-1">
+                                            <i class="ti ti-arrow-down f-12"></i>
+                                        </a>
+                                    </th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>

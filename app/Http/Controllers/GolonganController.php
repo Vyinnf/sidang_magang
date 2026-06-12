@@ -20,7 +20,7 @@ class GolonganController extends Controller
     {
         $tableQuery = $this->resolveTableQuery(
             $request,
-            ['created_at', 'golongan', 'pangkat', 'asn'],
+            ['id', 'created_at', 'golongan', 'pangkat', 'asn'],
             'created_at',
             'desc',
             10
