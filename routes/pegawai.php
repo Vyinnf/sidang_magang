@@ -27,6 +27,7 @@ Route::middleware('auth', 'role:pegawai')
         Route::prefix('riwayat-gbk')
             ->name('riwayat-gbk.')
             ->group(function () {
+                Route::get('/export/{format}', [PegawaiRiwayatGbkController::class, 'export'])->name('export');
                 Route::get('/', [PegawaiRiwayatGbkController::class, 'index'])->name('index');
                 Route::get('/{id}/show', [PegawaiRiwayatGbkController::class, 'show'])->name('show');
                 Route::get('/{id}/edit', [PegawaiRiwayatGbkController::class, 'edit'])->name('edit');

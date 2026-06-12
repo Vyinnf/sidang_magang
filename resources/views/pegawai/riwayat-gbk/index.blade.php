@@ -31,6 +31,7 @@
                     <x-table.filter-toolbar
                         placeholder="Cari nomor SK atau pejabat SK..."
                         :sort-options="[
+                            'id' => 'ID',
                             'tmt_sk' => 'TMT SK',
                             'tanggal_sk' => 'Tanggal SK',
                             'status_sk' => 'Status SK',
@@ -41,6 +42,28 @@
                         :dir="$tableQuery['dir'] ?? request('dir', 'desc')"
                         :per-page="$tableQuery['per_page'] ?? (int) request('per_page', 10)"
                     >
+                        <x-slot name="actions">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="ti ti-download me-1"></i> Unduh
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('pegawai.riwayat-gbk.export', array_merge(request()->query(), ['format' => 'excel'])) }}">
+                                            <i class="ti ti-file-spreadsheet me-2"></i> Excel
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('pegawai.riwayat-gbk.export', array_merge(request()->query(), ['format' => 'pdf'])) }}">
+                                            <i class="ti ti-file-pdf me-2"></i> PDF
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                                <i class="ti ti-printer me-1"></i> Cetak
+                            </button>
+                        </x-slot>
                         <div class="col-md-3">
                             <label class="form-label mb-1">Status SK</label>
                             <select name="status_sk" class="form-select">
@@ -67,10 +90,24 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th class="text-center">No</th>
-                                        <th class="text-center">TMT SK</th>
+                                        <th class="text-center">
+                                            <a href="{{ route('pegawai.riwayat-gbk.index', array_merge(request()->query(), ['sort' => 'tmt_sk', 'dir' => request('dir') === 'asc' && request('sort') === 'tmt_sk' ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark">
+                                                TMT SK
+                                                @if (request('sort') === 'tmt_sk')
+                                                    <i class="ti ti-arrow-{{ request('dir') === 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
                                         <th class="text-center">Nomor SK</th>
                                         <th class="text-center">Tanggal SK</th>
-                                        <th class="text-center">Status SK</th>
+                                        <th class="text-center">
+                                            <a href="{{ route('pegawai.riwayat-gbk.index', array_merge(request()->query(), ['sort' => 'status_sk', 'dir' => request('dir') === 'asc' && request('sort') === 'status_sk' ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark">
+                                                Status SK
+                                                @if (request('sort') === 'status_sk')
+                                                    <i class="ti ti-arrow-{{ request('dir') === 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
                                         <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>

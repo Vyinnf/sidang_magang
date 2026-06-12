@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Pegawai;
 
 use App\Http\Controllers\Concerns\InteractsWithTableQuery;
 use App\Http\Controllers\Controller;
+use Barryvdh\DomPDF\Facade\Pdf as Dompdf;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,13 +17,51 @@ class RiwayatGbkController extends Controller
     {
         $tableQuery = $this->resolveTableQuery(
             $request,
-            ['tmt_sk', 'tanggal_sk', 'status_sk', 'created_at'],
+            ['id', 'tmt_sk', 'tanggal_sk', 'status_sk', 'created_at'],
             'tmt_sk',
             'desc',
             10
         );
         $statusSk = $this->resolveFilter($request, 'status_sk', ['lengkap', 'tidak_lengkap']);
 
+        $query = $this->buildRiwayatGbkQuery($tableQuery, $statusSk);
+
+        $riwayatGbks = $query
+            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
+            ->paginate($tableQuery['per_page'])
+            ->withQueryString();
+
+        return view('pegawai.riwayat-gbk.index', compact('riwayatGbks', 'tableQuery', 'statusSk'));
+    }
+
+    public function export(Request $request, string $format = 'pdf')
+    {
+        $tableQuery = $this->resolveTableQuery(
+            $request,
+            ['id', 'tmt_sk', 'tanggal_sk', 'status_sk', 'created_at'],
+            'tmt_sk',
+            'desc',
+            9999
+        );
+        $statusSk = $this->resolveFilter($request, 'status_sk', ['lengkap', 'tidak_lengkap']);
+
+        $query = $this->buildRiwayatGbkQuery($tableQuery, $statusSk);
+        $riwayatGbks = $query->orderBy($tableQuery['sort'], $tableQuery['dir'])->get();
+
+        if ($format === 'excel') {
+            $html = view('pegawai.riwayat-gbk.export-excel', compact('riwayatGbks'))->render();
+            return response($html)
+                ->header('Content-Type', 'application/vnd.ms-excel')
+                ->header('Content-Disposition', 'attachment; filename="riwayat-gaji-berkala-' . now()->format('Y-m-d-His') . '.xls"');
+        }
+
+        $pdf = Dompdf::loadView('pegawai.riwayat-gbk.export-pdf', compact('riwayatGbks'))
+            ->setPaper('a4', 'landscape');
+        return $pdf->download('riwayat-gaji-berkala-' . now()->format('Y-m-d-His') . '.pdf');
+    }
+
+    private function buildRiwayatGbkQuery(array $tableQuery, ?string $statusSk): Builder
+    {
         $query = Auth::user()
             ->pegawai->riwayatGbks()
             ->with(['golonganLama', 'golonganBaru']);
@@ -46,12 +86,7 @@ class RiwayatGbkController extends Controller
             $query->whereDate('tmt_sk', '<=', $tableQuery['to']);
         }
 
-        $riwayatGbks = $query
-            ->orderBy($tableQuery['sort'], $tableQuery['dir'])
-            ->paginate($tableQuery['per_page'])
-            ->withQueryString();
-
-        return view('pegawai.riwayat-gbk.index', compact('riwayatGbks', 'tableQuery', 'statusSk'));
+        return $query;
     }
 
     public function show($id)
